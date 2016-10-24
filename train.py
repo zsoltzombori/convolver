@@ -6,9 +6,9 @@ import sys
 sys.setrecursionlimit(2**20)
 
 parser = argparse.ArgumentParser(description="Image classifer using sparsifying arm layers embedded into convolution.")
-parser.add_argument('--iteration', dest="iteration", type=int, default=6, help="Number of iterations in k-arm approximation")
-parser.add_argument('--threshold', dest="threshold", type=float, default=0.04, help="Sparsity coefficient")
-parser.add_argument('--reconsCoef', dest="reconsCoef", type=float, default=2, help="Reconstruction coefficient of the arm layers")
+parser.add_argument('--iteration', dest="iteration", type=int, default=1, help="Number of iterations in k-arm approximation")
+parser.add_argument('--threshold', dest="threshold", type=float, default=0.03, help="Sparsity coefficient")
+parser.add_argument('--reconsCoef', dest="reconsCoef", type=float, default=1, help="Reconstruction coefficient of the arm layers")
 parser.add_argument('--dict', dest="dict_size", type=int, default=100, help="Size of the feature dictionary")
 parser.add_argument('--epoch', dest="epoch", type=int, default=10, help="Number of epochs")
 parser.add_argument('--lr', dest="lr", type=float, default=0.001, help="learning rate")

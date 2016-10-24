@@ -41,11 +41,13 @@ def build_classifier(input_shape, nb_classes, convLayers, armLayers, denseLayers
 
 # just like a standard mnist_conv net, but using conv arm layers instead
 def arm_model(input_shape, nb_classes, batch_size, lr, iteration, threshold, reconsCoef):
-    nb_filters = 32
+    nb_filters = 8
     pool_size = (2,2)
     kernel_size = (3,3)
     input = Input(shape=input_shape[1:])
     output = input
+
+    output = MaxPooling2D(pool_size=pool_size)(output)
     
     layers = []
     layers.append(Flatten())
@@ -53,11 +55,11 @@ def arm_model(input_shape, nb_classes, batch_size, lr, iteration, threshold, rec
     output = ConvLayer(output, batch_size, layers, kernel_size[0], kernel_size[1], subsample=(1,1))
     output = Activation('relu')(output)
 
-    layers = []
-    layers.append(Flatten())
-    layers.append(ArmLayer(dict_size=nb_filters,iteration = iteration, threshold = threshold, reconsCoef = reconsCoef, name = "arm_2"))
-    output = ConvLayer(output, batch_size, layers, kernel_size[0], kernel_size[1], subsample=(1,1))
-    output = Activation('relu')(output)
+    # layers = []
+    # layers.append(Flatten())
+    # layers.append(ArmLayer(dict_size=nb_filters,iteration = iteration, threshold = threshold, reconsCoef = reconsCoef, name = "arm_2"))
+    # output = ConvLayer(output, batch_size, layers, kernel_size[0], kernel_size[1], subsample=(1,1))
+    # output = Activation('relu')(output)
 
     output = MaxPooling2D(pool_size=pool_size)(output)
     output = Dropout(0.5)(output)
