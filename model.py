@@ -40,8 +40,7 @@ def build_classifier(input_shape, nb_classes, convLayers, armLayers, denseLayers
     return model
 
 # just like a standard mnist_conv net, but using conv arm layers instead
-def arm_model(input_shape, nb_classes, batch_size, lr, iteration, threshold, reconsCoef):
-    nb_filters = 8
+def arm_model(input_shape, nb_classes, batch_size, lr, iteration, threshold, reconsCoef, nb_filters):
     pool_size = (2,2)
     kernel_size = (3,3)
     input = Input(shape=input_shape[1:])
