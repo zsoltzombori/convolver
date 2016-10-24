@@ -2,6 +2,8 @@ import numpy as np
 import argparse
 import data
 from model import *
+import sys
+sys.setrecursionlimit(2**20)
 
 parser = argparse.ArgumentParser(description="Image classifer using sparsifying arm layers embedded into convolution.")
 parser.add_argument('--iteration', dest="iteration", type=int, default=6, help="Number of iterations in k-arm approximation")
