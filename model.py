@@ -8,8 +8,10 @@ from keras import backend as K
 from keras.callbacks import Callback
 from keras.layers.normalization import BatchNormalization
 from keras.layers.convolutional import Convolution2D, MaxPooling2D
-
 from convolver import *
+
+import sys
+sys.path.append('/Users/zsoltzombori/git/k-arm')
 from arm import ArmLayer
 
 weight_decay = 1e-4

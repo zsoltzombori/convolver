@@ -1,9 +1,13 @@
 import numpy as np
 import argparse
-import data
-from model import *
 import sys
+sys.path.append('/Users/zsoltzombori/git/k-arm')
+import data
+from vis import *
+
+from model import *
 sys.setrecursionlimit(2**20)
+
 
 parser = argparse.ArgumentParser(description="Image classifer using sparsifying arm layers embedded into convolution.")
 parser.add_argument('--iteration', dest="iteration", type=int, default=1, help="Number of iterations in k-arm approximation")
@@ -27,9 +31,7 @@ X_train = X_train[:args.trainSize]
 Y_train = Y_train[:args.trainSize]
 X_test = X_test[:args.testSize]
 Y_test = Y_test[:args.testSize]
-
  
-# model = build_classifier(X_train.shape, nb_classes, args.convLayers, args.armLayers, args.denseLayers, args.batchSize, args.lr, args.iteration, args.threshold, args.reconsCoef,args.dict_size)
 model = arm_model(X_train.shape, nb_classes, args.batchSize, args.lr, args.iteration, args.threshold, args.reconsCoef, args.dict_size)
 model.summary()
 
@@ -41,14 +43,12 @@ model.fit_generator(datagen.flow(X_train, Y_train, batch_size=args.batchSize, sh
                         nb_val_samples=X_test.shape[0]
                         )
 
-# lastArmLayer = model.get_layer(name="arm_{}".format(args.armLayers-1))
-# y_fun = K.function([model.layers[0].input, K.learning_phase()], [lastArmLayer.output])
-# Y_learned = y_fun([X_test,0])[0]
+lastArmLayer = model.get_layer(name="arm_1")
+y_fun = K.function([model.layers[0].input, K.learning_phase()], [lastArmLayer.output])
+Y_learned = y_fun([X_test,0])[0]
+W_learned = lastArmLayer.get_weights()[0]
 
-# W_learned = lastArmLayer.get_weights()[0]
-# for i in reversed(range(args.armLayers-1)):
-#     W_current = model.get_layer(name="arm_{}".format(i)).get_weights()[0]
-#     W_learned = np.dot(W_learned, W_current)
-
-# if args.dataset == "mnist":
-#     evaluate(X_test, Y_learned, W_learned, args.iteration, args.threshold, "classif")
+W_scaled = W_learned - np.min(W_learned)
+W_scaled /= np.max(W_scaled)
+W_scaled *= 255
+vis(W_scaled, "ArmDict.png", n=int(np.sqrt(args.dict_size)), w=3)
