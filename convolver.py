@@ -104,7 +104,6 @@ class ConvReshapeAfter(Layer):
     def build(self, input_shape):
         assert len(input_shape) == 2, 'ConvReshapeAfter expects a 2dim array: batch_size * feature_size'
         self.nb_features = input_shape[1]
-        pass
 
     def get_output_shape_for(self, input_shape):
         if self.dim_ordering == 'th':
@@ -115,15 +114,24 @@ class ConvReshapeAfter(Layer):
             raise Exception('Invalid dim_ordering: ' + self.dim_ordering)
         
     def call(self, x, mask=None):
+        if self.dim_ordering == 'th':
+            cellShape = [self.batch_size, self.nb_features, 1, 1]
+            rowAxis = 2
+            colAxis = 3
+        elif self.dim_ordering == 'tf':
+            cellShape = [self.batch_size, 1, 1, self.nb_features]
+            rowAxis = 1
+            colAxis = 2
+
         resultMatrix=[]
         for row in range(self.output_rows):
             resultRow=[]
             for col in range(self.output_cols):
                 start = self.batch_size * (row*self.output_rows + col)
                 end = start + self.batch_size
-                currentCell = x[start:end,:].reshape([self.batch_size, -1, 1, 1])
+                currentCell = x[start:end,:].reshape(cellShape)
                 resultRow.append(currentCell)
-            resultRow2 = K.concatenate(resultRow, axis=2)
+            resultRow2 = K.concatenate(resultRow, axis=rowAxis)
             resultMatrix.append(resultRow2)
-        resultMatrix2 = K.concatenate(resultMatrix, axis=3) # TODO only works for theano!!!
+        resultMatrix2 = K.concatenate(resultMatrix, axis=colAxis)
         return resultMatrix2
