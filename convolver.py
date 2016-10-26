@@ -33,7 +33,6 @@ def get_conv_output_shape(batch_input_shape, nb_row, nb_col, subsample, dim_orde
         cols = batch_input_shape[1]
     else:
         raise Exception('Invalid dim_ordering: ' + dim_ordering)
-    
     output_rows = np_utils.conv_output_length(rows, nb_row, border_mode, subsample[0])
     output_cols = np_utils.conv_output_length(cols, nb_col, border_mode, subsample[1])
     output_features = nb_features
@@ -74,9 +73,11 @@ class ConvReshapeBefore(Layer):
     def call(self, x, mask=None):
         windows = []
         for row in range(self.output_rows):
+            print "row: ", row
             rowStart = row * self.subsample[0]
             rowEnd = rowStart + self.nb_row
             for col in range(self.output_cols):
+                print "   col: ", col
                 colStart = col * self.subsample[1]
                 colEnd = colStart + self.nb_col
 
