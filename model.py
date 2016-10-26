@@ -56,8 +56,6 @@ def arm_model(input_shape, nb_classes, batch_size, lr, iteration, threshold, rec
     input = Input(shape=input_shape[1:])
     output = input
 
-#    output = MaxPooling2D(pool_size=pool_size)(output)
-    
     layers = []
     layers.append(Flatten())
     layers.append(ArmLayer(dict_size=nb_filters,iteration = iteration,threshold = threshold, reconsCoef = reconsCoef, name = "arm_1"))

@@ -20,7 +20,7 @@ def ConvLayer(input, batch_size, innerLayers, nb_row=2, nb_col=2, subsample=(1,1
 
 def get_conv_output_shape(batch_input_shape, nb_row, nb_col, subsample, dim_ordering, border_mode):
     if border_mode not in {'valid', 'same'}:
-        raise Exception('Invalid border mode for reshape_before_conv:', border_mode)
+        raise Exception('Invalid border mode:', border_mode)
     if dim_ordering == 'default':
         dim_ordering = K.image_dim_ordering()
     if dim_ordering == 'th':
