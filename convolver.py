@@ -73,11 +73,9 @@ class ConvReshapeBefore(Layer):
     def call(self, x, mask=None):
         windows = []
         for row in range(self.output_rows):
-            print "row: ", row
             rowStart = row * self.subsample[0]
             rowEnd = rowStart + self.nb_row
             for col in range(self.output_cols):
-                print "   col: ", col
                 colStart = col * self.subsample[1]
                 colEnd = colStart + self.nb_col
 
@@ -130,7 +128,7 @@ class ConvReshapeAfter(Layer):
             for col in range(self.output_cols):
                 start = self.batch_size * (row*self.output_rows + col)
                 end = start + self.batch_size
-                currentCell = x[start:end,:].reshape(cellShape)
+                currentCell = K.reshape(x[start:end,:], cellShape)
                 resultRow.append(currentCell)
             resultRow2 = K.concatenate(resultRow, axis=rowAxis)
             resultMatrix.append(resultRow2)
