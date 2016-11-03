@@ -8,6 +8,7 @@ Gets to 99.25% test accuracy after 12 epochs
 
 from __future__ import print_function
 import numpy as np
+
 np.random.seed(1337)  # for reproducibility
 
 from keras.datasets import mnist
@@ -16,19 +17,20 @@ from keras.layers import Dense, Dropout, Activation, Flatten
 from keras.layers import Convolution2D, MaxPooling2D
 from keras.utils import np_utils
 from keras import backend as K
+from vis import *
 
-batch_size = 4
+batch_size = 128
 nb_classes = 10
-nb_epoch = 12
+nb_epoch = 10
 
 # input image dimensions
 img_rows, img_cols = 28, 28
 # number of convolutional filters to use
-nb_filters = 32
+nb_filters = 36
 # size of pooling area for max pooling
 pool_size = (2, 2)
 # convolution kernel size
-kernel_size = (3, 3)
+kernel_size = (5, 5)
 
 # the data, shuffled and split between train and test sets
 (X_train, y_train), (X_test, y_test) = mnist.load_data()
@@ -58,7 +60,7 @@ model = Sequential()
 
 model.add(Convolution2D(nb_filters, kernel_size[0], kernel_size[1],
                         border_mode='valid',
-                        input_shape=input_shape))
+                        input_shape=input_shape, name="firstLayer"))
 model.add(Activation('relu'))
 model.add(Convolution2D(nb_filters, kernel_size[0], kernel_size[1]))
 model.add(Activation('relu'))
@@ -81,3 +83,7 @@ model.fit(X_train, Y_train, batch_size=batch_size, nb_epoch=nb_epoch,
 score = model.evaluate(X_test, Y_test, verbose=0)
 print('Test score:', score[0])
 print('Test accuracy:', score[1])
+
+myLayer = model.get_layer(name="firstLayer")
+W_learned = myLayer.get_weights()[0]
+vis_conv_weight(W_learned, "pictures/mnist_orig_{}.png".format(kernel_size[0]))

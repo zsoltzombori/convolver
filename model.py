@@ -17,15 +17,18 @@ from arm import ArmLayer
 
 weight_decay = 1e-4
 
-def conv_model(input_shape, nb_classes, batch_size, lr, nb_filters):
-    pool_size = (2,2)
-    kernel_size = (3,3)
+if K.image_dim_ordering() == 'th':
+    feature_axis = 1
+elif K.image_dim_ordering() == 'tf':
+    feature_axis = 3
+
+def conv_model(input_shape, nb_classes, batch_size, lr, nb_filters, kernel_size, pool_size):
     input = Input(shape=input_shape[1:])
     output = input
 
     layers = []
     layers.append(Flatten())
-    layers.append(Dense(nb_filters, input_shape=[np.prod(pool_size)]))
+    layers.append(Dense(nb_filters, input_shape=[np.prod(pool_size)], name="firstLayer"))
     output = ConvLayer(output, batch_size, layers, kernel_size[0], kernel_size[1], subsample=(1,1))
     output = Activation('relu')(output)
 
@@ -50,15 +53,14 @@ def conv_model(input_shape, nb_classes, batch_size, lr, nb_filters):
 
 
 # just like a standard mnist_conv net, but using conv arm layers instead
-def arm_model(input_shape, nb_classes, batch_size, lr, iteration, threshold, reconsCoef, nb_filters):
-    pool_size = (2,2)
-    kernel_size = (3,3)
+def arm_model(input_shape, nb_classes, batch_size, lr, iteration, threshold, reconsCoef, nb_filters, kernel_size, pool_size):
     input = Input(shape=input_shape[1:])
     output = input
 
+    output = BatchNormalization(axis=feature_axis)(output)
     layers = []
     layers.append(Flatten())
-    layers.append(ArmLayer(dict_size=nb_filters,iteration = iteration,threshold = threshold, reconsCoef = reconsCoef, name = "arm_1"))
+    layers.append(ArmLayer(dict_size=nb_filters,iteration = iteration,threshold = threshold, reconsCoef = reconsCoef, name = "firstLayer"))
     output = ConvLayer(output, batch_size, layers, kernel_size[0], kernel_size[1], subsample=(1,1))
     output = Activation('relu')(output)
 
@@ -78,5 +80,6 @@ def arm_model(input_shape, nb_classes, batch_size, lr, iteration, threshold, rec
 
     model = Model(input=input, output=output)
     optimizer = RMSprop(lr=lr)
+    optimizer = "adadelta"
     model.compile(optimizer=optimizer, loss="categorical_crossentropy", metrics=["accuracy"])
     return model
