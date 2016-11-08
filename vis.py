@@ -31,4 +31,5 @@ def vis(X, filename, n='default', padding=1):
             py = j*padding
             img[i*wx+px:(i+1)*wx+px, j*wy+py:(j+1)*wy+py] = X[i*n+j, :, :]
     img = img.clip(0, 255).astype(np.uint8)
+    print("Creating image file {}".format(filename))
     scipy.misc.imsave(filename, img)

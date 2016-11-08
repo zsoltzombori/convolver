@@ -19,18 +19,18 @@ from keras.utils import np_utils
 from keras import backend as K
 from vis import *
 
-batch_size = 128
+batch_size = 8
 nb_classes = 10
-nb_epoch = 10
+nb_epoch = 20
 
 # input image dimensions
 img_rows, img_cols = 28, 28
 # number of convolutional filters to use
-nb_filters = 36
+nb_filters = 16
 # size of pooling area for max pooling
 pool_size = (2, 2)
 # convolution kernel size
-kernel_size = (5, 5)
+kernel_size = (9, 9)
 
 # the data, shuffled and split between train and test sets
 (X_train, y_train), (X_test, y_test) = mnist.load_data()
@@ -60,9 +60,10 @@ model = Sequential()
 
 model.add(Convolution2D(nb_filters, kernel_size[0], kernel_size[1],
                         border_mode='valid',
-                        input_shape=input_shape, name="firstLayer"))
+                        input_shape=input_shape, name="conv1"))
 model.add(Activation('relu'))
-model.add(Convolution2D(nb_filters, kernel_size[0], kernel_size[1]))
+model.add(Convolution2D(nb_filters, kernel_size[0], kernel_size[1],
+                        border_mode='valid', name="conv2"))
 model.add(Activation('relu'))
 model.add(MaxPooling2D(pool_size=pool_size))
 model.add(Dropout(0.25))
@@ -75,7 +76,7 @@ model.add(Dense(nb_classes))
 model.add(Activation('softmax'))
 
 model.compile(loss='categorical_crossentropy',
-              optimizer='adadelta',
+              optimizer='rmsprop',
               metrics=['accuracy'])
 model.summary()
 model.fit(X_train, Y_train, batch_size=batch_size, nb_epoch=nb_epoch,
@@ -84,6 +85,8 @@ score = model.evaluate(X_test, Y_test, verbose=0)
 print('Test score:', score[0])
 print('Test accuracy:', score[1])
 
-myLayer = model.get_layer(name="firstLayer")
-W_learned = myLayer.get_weights()[0]
-vis_conv_weight(W_learned, "pictures/mnist_orig_{}.png".format(kernel_size[0]))
+for i in (1,2):
+    layer = model.get_layer(name="conv{}".format(i))
+    W_learned = layer.get_weights()[0]
+    vis_conv_weight(W_learned, "pictures/mnist_orig_dict{}_kernel{}_acc{:.2f}_{}.png".format(nb_filters, kernel_size[0], 100*score[1], i))    
+
